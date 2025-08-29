@@ -31,18 +31,21 @@ axiosInstance.interceptors.response.use(
 
     },
     (error) => {
-        if(error.response){
-            if(error.response.status === 401){
-                window.location.href = '/'
+         if (error.response) {
+            if (
+                error.response.status === 401 &&
+                error.config.url !== API_PATHS.AUTH.LOGIN
+            ) {
+                window.location.href = '/';
+            } else if (error.response.status === 500) {
+                console.error('Server error: ', error.response.data);
             }
-            else if(error.response.status === 500){
-                console.error("Server error")
-            }
+        } else if (error.code === 'ECONNABORTED') {
+            console.error('Request timeout');
+        } else {
+            console.error('Error', error.message);
         }
-        else if(error.code === 'ECONNABORTED'){
-            console.error("Request timeout")
-        }
-        return Promise.reject(error)
+        return Promise.reject(error);
     }
 )
 
